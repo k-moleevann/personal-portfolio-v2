@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+  <defs>
+    <linearGradient id="cg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a2e1a"/>
+      <stop offset="100%" style="stop-color:#162a2a"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#cg)"/>
+  <text x="400" y="260" text-anchor="middle" fill="#6b6b82" font-family="sans-serif" font-size="18">Community Placeholder</text>
+</svg>
