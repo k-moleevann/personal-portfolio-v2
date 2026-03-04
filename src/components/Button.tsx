@@ -16,12 +16,12 @@ export default function Button({
     ...props
 }: ButtonProps) {
     const baseStyles =
-        "inline-flex items-center justify-center rounded-full px-8 py-3 text-sm font-semibold transition-all duration-300 active:scale-95";
+        "inline-flex items-center justify-center rounded-full px-10 py-3.5 text-sm font-semibold transition-all duration-300 active:scale-95";
 
     const variants = {
         solid: "bg-black text-white hover:bg-black/90",
         outline:
-            "bg-transparent text-black border border-black hover:bg-black hover:text-white",
+            "bg-transparent text-black border-[1px] border-black hover:bg-black hover:text-white",
         floating:
             "bg-white text-black shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] hover:-translate-y-1",
     };
