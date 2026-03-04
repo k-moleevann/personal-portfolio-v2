@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import {
     Facebook,
     Instagram,
@@ -30,18 +29,13 @@ export default function LinkButton({ label, url, icon, index = 0 }: LinkButtonPr
     const Icon = iconMap[icon] || ExternalLink;
 
     return (
-        <motion.a
+        <a
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.08, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            whileHover={{ scale: 1.02, y: -2 }}
-            whileTap={{ scale: 0.98 }}
             className={clsx(
-                "group flex items-center gap-4 w-full max-w-md mx-auto p-4 rounded-2xl",
+                "reveal-item group flex items-center gap-4 w-full max-w-md mx-auto p-4 rounded-2xl",
+                "hover:-translate-y-0.5 hover:scale-[1.02] active:scale-[0.98]",
                 "bg-[var(--color-bg-card)] border border-[var(--color-border)]",
                 "hover:border-[var(--color-accent)]/40 hover:shadow-lg hover:shadow-[var(--color-accent-glow)]",
                 "transition-all duration-500"
@@ -60,6 +54,6 @@ export default function LinkButton({ label, url, icon, index = 0 }: LinkButtonPr
                 size={16}
                 className="text-[var(--color-text-muted)] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
             />
-        </motion.a>
+        </a>
     );
 }

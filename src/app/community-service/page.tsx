@@ -3,7 +3,6 @@
 import PageTransition from "@/components/PageTransition";
 import SectionReveal, { RevealItem } from "@/components/SectionReveal";
 import { communityEntries, impactMetrics } from "@/data/community";
-import { motion } from "framer-motion";
 import Image from "next/image";
 import {
     Calendar,
@@ -53,9 +52,8 @@ export default function CommunityServicePage() {
                                 const Icon = metricIconMap[metric.icon] || Award;
                                 return (
                                     <RevealItem key={metric.label}>
-                                        <motion.div
-                                            whileHover={{ y: -4 }}
-                                            className="glass-card p-6 text-center hover:border-[var(--color-border-hover)] transition-all duration-500"
+                                        <div
+                                            className="glass-card p-6 text-center hover:-translate-y-1 border border-transparent hover:border-[var(--color-border-hover)] transition-all duration-500"
                                         >
                                             <Icon
                                                 size={24}
@@ -70,7 +68,7 @@ export default function CommunityServicePage() {
                                             <p className="text-xs text-[var(--color-text-muted)] mt-1 uppercase tracking-wide">
                                                 {metric.label}
                                             </p>
-                                        </motion.div>
+                                        </div>
                                     </RevealItem>
                                 );
                             })}
@@ -94,9 +92,8 @@ export default function CommunityServicePage() {
                     <div className="space-y-8">
                         {communityEntries.map((entry, i) => (
                             <SectionReveal key={entry.id} delay={i * 0.1}>
-                                <motion.div
-                                    whileHover={{ y: -3 }}
-                                    className="glass-card overflow-hidden hover:border-[var(--color-border-hover)] transition-all duration-500"
+                                <div
+                                    className="glass-card overflow-hidden hover:-translate-y-1 border border-transparent hover:border-[var(--color-border-hover)] transition-all duration-500"
                                 >
                                     <div className="flex flex-col lg:flex-row">
                                         {/* Image */}
@@ -159,7 +156,7 @@ export default function CommunityServicePage() {
                                             )}
                                         </div>
                                     </div>
-                                </motion.div>
+                                </div>
                             </SectionReveal>
                         ))}
                     </div>

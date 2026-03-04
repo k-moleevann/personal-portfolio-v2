@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { MapPin, Calendar } from "lucide-react";
 import type { ExperienceEntry } from "@/data/experience";
 
@@ -11,12 +10,8 @@ interface ExperienceCardProps {
 
 export default function ExperienceCard({ entry, index = 0 }: ExperienceCardProps) {
     return (
-        <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="group relative pl-8 pb-10 border-l-2 border-[var(--color-border)] last:pb-0"
+        <div
+            className="reveal-item group relative pl-8 pb-10 border-l-2 border-[var(--color-border)] last:pb-0"
         >
             {/* Timeline dot */}
             <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-[var(--color-bg-primary)] border-2 border-[var(--color-accent)] group-hover:bg-[var(--color-accent)] transition-colors duration-300" />
@@ -79,6 +74,6 @@ export default function ExperienceCard({ entry, index = 0 }: ExperienceCardProps
                     </div>
                 )}
             </div>
-        </motion.div>
+        </div>
     );
 }

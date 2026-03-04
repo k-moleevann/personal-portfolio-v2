@@ -5,7 +5,6 @@ import PageTransition from "@/components/PageTransition";
 import SectionReveal from "@/components/SectionReveal";
 import ProjectCard from "@/components/ProjectCard";
 import { projects, projectCategories } from "@/data/projects";
-import { motion } from "framer-motion";
 import clsx from "clsx";
 
 export default function ProjectsPage() {
@@ -69,42 +68,30 @@ export default function ProjectsPage() {
                     <SectionReveal>
                         <div className="flex flex-wrap gap-2 mb-12">
                             {projectCategories.map((cat) => (
-                                <motion.button
+                                <button
                                     key={cat.key}
                                     onClick={() => setActiveCategory(cat.key)}
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
                                     className={clsx(
-                                        "px-5 py-2 rounded-full text-sm font-medium transition-all duration-300",
+                                        "px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 active:scale-95",
                                         activeCategory === cat.key
                                             ? "bg-[var(--color-accent)] text-white shadow-lg shadow-[var(--color-accent-glow)]"
                                             : "bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)]"
                                     )}
                                 >
                                     {cat.label}
-                                </motion.button>
+                                </button>
                             ))}
                         </div>
                     </SectionReveal>
 
                     {/* Project grid */}
-                    <motion.div
-                        layout
-                        className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
-                    >
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filtered.map((project, i) => (
-                            <motion.div
-                                key={project.id}
-                                layout
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.9 }}
-                                transition={{ duration: 0.3 }}
-                            >
+                            <div key={project.id}>
                                 <ProjectCard project={project} index={i} />
-                            </motion.div>
+                            </div>
                         ))}
-                    </motion.div>
+                    </div>
 
                     {filtered.length === 0 && (
                         <p className="text-center text-[var(--color-text-muted)] py-12">

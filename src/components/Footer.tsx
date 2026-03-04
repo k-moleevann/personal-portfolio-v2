@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { socials } from "@/data/socials";
 import {
     Facebook,
@@ -50,18 +49,16 @@ export default function Footer() {
                         {socials.map((social) => {
                             const Icon = iconMap[social.icon] || Github;
                             return (
-                                <motion.a
+                                <a
                                     key={social.id}
                                     href={social.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    whileHover={{ y: -3, scale: 1.1 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors"
+                                    className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-accent)] hover:-translate-y-0.5 hover:scale-110 active:scale-95 transition-all duration-200"
                                     aria-label={social.label}
                                 >
                                     <Icon size={20} />
-                                </motion.a>
+                                </a>
                             );
                         })}
                     </div>
@@ -74,15 +71,13 @@ export default function Footer() {
                         {/* ← REPLACE with your name */}
                     </p>
 
-                    <motion.button
+                    <button
                         onClick={scrollToTop}
-                        whileHover={{ y: -2 }}
-                        whileTap={{ scale: 0.9 }}
-                        className="flex items-center gap-2 text-xs text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors"
+                        className="flex items-center gap-2 text-xs text-[var(--color-text-muted)] hover:text-[var(--color-accent)] hover:-translate-y-0.5 active:scale-90 transition-all duration-200"
                     >
                         Back to top
                         <ArrowUp size={14} />
-                    </motion.button>
+                    </button>
                 </div>
             </div>
         </footer>

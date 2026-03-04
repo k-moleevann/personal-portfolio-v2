@@ -1,53 +1,22 @@
 "use client";
 
-import { motion, type Variants } from "framer-motion";
-import { useRef } from "react";
+import { useRef, ReactNode } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import clsx from "clsx";
 
+if (typeof window !== "undefined") {
+    gsap.registerPlugin(ScrollTrigger);
+}
+
 interface SectionRevealProps {
-    children: React.ReactNode;
+    children: ReactNode;
     className?: string;
     delay?: number;
     direction?: "up" | "down" | "left" | "right";
     stagger?: boolean;
 }
-
-const getVariants = (direction: string): Variants => {
-    const directionMap: Record<string, { x: number; y: number }> = {
-        up: { x: 0, y: 40 },
-        down: { x: 0, y: -40 },
-        left: { x: 40, y: 0 },
-        right: { x: -40, y: 0 },
-    };
-    const offset = directionMap[direction] || directionMap.up;
-
-    return {
-        hidden: {
-            opacity: 0,
-            x: offset.x,
-            y: offset.y,
-        },
-        visible: {
-            opacity: 1,
-            x: 0,
-            y: 0,
-            transition: {
-                duration: 0.7,
-                ease: [0.16, 1, 0.3, 1],
-            },
-        },
-    };
-};
-
-const staggerContainer: Variants = {
-    hidden: {},
-    visible: {
-        transition: {
-            staggerChildren: 0.1,
-            delayChildren: 0.05,
-        },
-    },
-};
 
 export default function SectionReveal({
     children,
@@ -56,51 +25,86 @@ export default function SectionReveal({
     direction = "up",
     stagger = false,
 }: SectionRevealProps) {
-    const ref = useRef(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
-    if (stagger) {
-        return (
-            <motion.div
-                ref={ref}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-80px" }}
-                variants={staggerContainer}
-                className={className}
-            >
-                {children}
-            </motion.div>
-        );
-    }
+    useGSAP(() => {
+        if (!containerRef.current) return;
+
+        const getOffset = () => {
+            switch (direction) {
+                case "up": return { y: 40 };
+                case "down": return { y: -40 };
+                case "left": return { x: 40 };
+                case "right": return { x: -40 };
+                default: return { y: 40 };
+            }
+        };
+
+        if (stagger) {
+            const items = gsap.utils.toArray(".reveal-item", containerRef.current);
+            if (items.length > 0) {
+                gsap.from(items, {
+                    ...getOffset(),
+                    opacity: 0,
+                    duration: 0.7,
+                    stagger: 0.1,
+                    ease: "power3.out",
+                    delay: delay,
+                    scrollTrigger: {
+                        trigger: containerRef.current,
+                        start: "top 85%",
+                        toggleActions: "play none none none"
+                    }
+                });
+            } else {
+                // Fallback to direct children if no .reveal-item classes
+                gsap.from(containerRef.current.children, {
+                    ...getOffset(),
+                    opacity: 0,
+                    duration: 0.7,
+                    stagger: 0.1,
+                    ease: "power3.out",
+                    delay: delay,
+                    scrollTrigger: {
+                        trigger: containerRef.current,
+                        start: "top 85%",
+                        toggleActions: "play none none none"
+                    }
+                });
+            }
+        } else {
+            gsap.from(containerRef.current, {
+                ...getOffset(),
+                opacity: 0,
+                duration: 0.7,
+                ease: "power3.out",
+                delay: delay,
+                scrollTrigger: {
+                    trigger: containerRef.current,
+                    start: "top 85%",
+                    toggleActions: "play none none none"
+                }
+            });
+        }
+    }, { scope: containerRef });
 
     return (
-        <motion.div
-            ref={ref}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            variants={getVariants(direction)}
-            transition={{ delay }}
-            className={className}
-        >
+        <div ref={containerRef} className={className}>
             {children}
-        </motion.div>
+        </div>
     );
 }
 
-/* Stagger child — use inside a SectionReveal with stagger=true */
 export function RevealItem({
     children,
     className,
-    direction = "up",
 }: {
-    children: React.ReactNode;
+    children: ReactNode;
     className?: string;
-    direction?: "up" | "down" | "left" | "right";
 }) {
     return (
-        <motion.div variants={getVariants(direction)} className={clsx(className)}>
+        <div className={clsx("reveal-item", className)}>
             {children}
-        </motion.div>
+        </div>
     );
 }

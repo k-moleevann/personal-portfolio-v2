@@ -6,7 +6,6 @@ import ExperienceCard from "@/components/ExperienceCard";
 import { experiences, education } from "@/data/experience";
 import { GraduationCap, Briefcase } from "lucide-react";
 import Link from "next/link";
-import { motion } from "framer-motion";
 
 export default function ExperiencePage() {
     return (
@@ -95,9 +94,8 @@ export default function ExperiencePage() {
                     <div className="space-y-6">
                         {education.map((edu, i) => (
                             <SectionReveal key={edu.id} delay={i * 0.1}>
-                                <motion.div
-                                    whileHover={{ y: -3 }}
-                                    className="glass-card p-6 hover:border-[var(--color-border-hover)] transition-all duration-500"
+                                <div
+                                    className="glass-card p-6 border border-transparent hover:-translate-y-1 hover:border-[var(--color-border-hover)] transition-all duration-500"
                                 >
                                     <h3
                                         className="text-lg font-bold text-[var(--color-text-primary)]"
@@ -116,7 +114,7 @@ export default function ExperiencePage() {
                                             {edu.description}
                                         </p>
                                     )}
-                                </motion.div>
+                                </div>
                             </SectionReveal>
                         ))}
                     </div>

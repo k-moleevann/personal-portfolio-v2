@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import clsx from "clsx";
 import PageTransition from "@/components/PageTransition";
 import SectionReveal from "@/components/SectionReveal";
 import LinkButton from "@/components/LinkButton";
 import { socials, contactEmail } from "@/data/socials";
-import { motion } from "framer-motion";
 import { Copy, Check, Mail } from "lucide-react";
 
 export default function ContactPage() {
@@ -66,11 +66,9 @@ export default function ContactPage() {
 
                     {/* Copy email button */}
                     <SectionReveal delay={0.4}>
-                        <motion.button
+                        <button
                             onClick={handleCopyEmail}
-                            whileHover={{ scale: 1.02, y: -2 }}
-                            whileTap={{ scale: 0.98 }}
-                            className="flex items-center gap-4 w-full max-w-md mx-auto p-4 rounded-2xl bg-gradient-to-r from-[var(--color-accent)]/10 to-[var(--color-accent-secondary)]/10 border border-[var(--color-accent)]/20 hover:border-[var(--color-accent)]/40 transition-all duration-500 group"
+                            className="flex items-center gap-4 w-full max-w-md mx-auto p-4 rounded-2xl bg-gradient-to-r from-[var(--color-accent)]/10 to-[var(--color-accent-secondary)]/10 border border-[var(--color-accent)]/20 hover:border-[var(--color-accent)]/40 hover:-translate-y-0.5 hover:scale-[1.02] active:scale-[0.98] transition-all duration-500 group"
                         >
                             <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[var(--color-accent)]/20">
                                 <Mail
@@ -89,17 +87,18 @@ export default function ContactPage() {
                             <div className="text-[var(--color-accent)]">
                                 {copied ? <Check size={18} /> : <Copy size={18} />}
                             </div>
-                        </motion.button>
+                        </button>
                     </SectionReveal>
 
                     {/* Status message */}
-                    <motion.p
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: copied ? 1 : 0 }}
-                        className="text-center text-sm text-[var(--color-accent)] mt-4"
+                    <p
+                        className={clsx(
+                            "text-center text-sm text-[var(--color-accent)] mt-4 transition-opacity duration-300",
+                            copied ? "opacity-100" : "opacity-0"
+                        )}
                     >
                         Email copied to clipboard!
-                    </motion.p>
+                    </p>
                 </div>
             </section>
         </PageTransition>

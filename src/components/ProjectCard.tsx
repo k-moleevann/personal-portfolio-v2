@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Image from "next/image";
 import clsx from "clsx";
 import type { Project } from "@/data/projects";
@@ -17,14 +16,10 @@ export default function ProjectCard({
     compact = false,
 }: ProjectCardProps) {
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.08, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            whileHover={{ y: -6 }}
+        <div
             className={clsx(
                 "group relative rounded-2xl overflow-hidden border border-[var(--color-border)] bg-[var(--color-bg-card)]",
+                "reveal-item hover:-translate-y-1.5",
                 "transition-all duration-500 hover:border-[var(--color-border-hover)] hover:shadow-xl hover:shadow-[var(--color-accent-glow)]",
                 compact ? "min-w-[280px] w-[320px] flex-shrink-0" : "w-full"
             )}
@@ -73,6 +68,6 @@ export default function ProjectCard({
                     ))}
                 </div>
             </div>
-        </motion.div>
+        </div>
     );
 }

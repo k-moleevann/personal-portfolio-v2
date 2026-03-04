@@ -1,11 +1,17 @@
 "use client";
 
-import { useState, useEffect, useId } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { Flip } from "gsap/dist/Flip";
 import { Menu, X } from "lucide-react";
 import clsx from "clsx";
+
+if (typeof window !== "undefined") {
+    gsap.registerPlugin(Flip, useGSAP);
+}
 
 const navItems = [
     { label: "Home", href: "/" },
@@ -16,43 +22,121 @@ const navItems = [
     { label: "Contact", href: "/contact" },
 ];
 
-/* ─────────────────────────────────────────────
-   Morphing hover pill — big8.asia style
-   A layoutId pill slides between nav items.
-───────────────────────────────────────────── */
 export default function Navbar() {
     const pathname = usePathname();
-    const pillId = useId();
     const [isScrolled, setIsScrolled] = useState(false);
     const [hoveredHref, setHoveredHref] = useState<string | null>(null);
     const [mobileOpen, setMobileOpen] = useState(false);
 
+    const headerRef = useRef<HTMLElement>(null);
+    const mobileOverlayRef = useRef<HTMLDivElement>(null);
+
+    // Pill refs
+    const pillRef = useRef<HTMLSpanElement>(null);
+    const dotRef = useRef<HTMLSpanElement>(null);
+
+    const activeHref = navItems.find(i => i.href === pathname)?.href || null;
+    const targetHref = hoveredHref || activeHref;
+
+    // Scroll listener
     useEffect(() => {
         const onScroll = () => setIsScrolled(window.scrollY > 24);
         window.addEventListener("scroll", onScroll, { passive: true });
         return () => window.removeEventListener("scroll", onScroll);
     }, []);
 
+    // Mobile scroll lock
     useEffect(() => {
         document.body.classList.toggle("no-scroll", mobileOpen);
         return () => document.body.classList.remove("no-scroll");
     }, [mobileOpen]);
 
-    /* Close mobile menu on route change.
-       Using a functional update avoids depending on the previous value. */
+    // Close menu on navigation
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setMobileOpen(false);
     }, [pathname]);
 
+    // Initial Header Entrance
+    useGSAP(() => {
+        gsap.fromTo(headerRef.current,
+            { y: -80, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.7, ease: "power3.out" }
+        );
+    }, { scope: headerRef });
+
+    // GSAP Flip for pill and dot
+    useGSAP(() => {
+        if (targetHref && pillRef.current) {
+            const targetContainer = document.querySelector(`[data-pill-container="${targetHref}"]`);
+            if (targetContainer && targetContainer !== pillRef.current.parentElement) {
+                // Determine color
+                const isActive = targetHref === activeHref;
+                const bgColor = isActive ? "var(--color-bg-primary)" : "var(--color-bg-tertiary)";
+                const bgAlpha = isActive ? "rgba(59, 91, 219, 0.08)" : "var(--color-bg-tertiary)";
+
+                const state = Flip.getState(pillRef.current);
+                targetContainer.appendChild(pillRef.current);
+
+                // Animate background color alongside the flip
+                gsap.to(pillRef.current, { backgroundColor: bgAlpha, duration: 0.2 });
+
+                Flip.from(state, {
+                    duration: 0.55,
+                    ease: "power3.out",
+                    absolute: true // Avoid jumping
+                });
+            }
+        }
+
+        if (activeHref && dotRef.current) {
+            const activeContainer = document.querySelector(`[data-dot-container="${activeHref}"]`);
+            if (activeContainer && activeContainer !== dotRef.current.parentElement) {
+                const state = Flip.getState(dotRef.current);
+                activeContainer.appendChild(dotRef.current);
+                Flip.from(state, {
+                    duration: 0.55,
+                    ease: "power3.out",
+                    absolute: true
+                });
+            }
+        }
+    }, [targetHref, activeHref]);
+
+    // Mobile menu toggle GSAP
+    useGSAP(() => {
+        if (!mobileOverlayRef.current) return;
+        const links = mobileOverlayRef.current.querySelectorAll("nav > div");
+
+        if (mobileOpen) {
+            gsap.to(mobileOverlayRef.current, {
+                opacity: 1,
+                visibility: "visible",
+                duration: 0.22,
+                ease: "power2.out"
+            });
+            gsap.fromTo(links,
+                { opacity: 0, y: 14 },
+                { opacity: 1, y: 0, duration: 0.3, stagger: 0.04, ease: "power3.out", overwrite: true }
+            );
+        } else {
+            gsap.to(mobileOverlayRef.current, {
+                opacity: 0,
+                duration: 0.22,
+                ease: "power2.in",
+                onComplete: () => {
+                    gsap.set(mobileOverlayRef.current, { visibility: "hidden" });
+                }
+            });
+        }
+    }, [mobileOpen]);
+
     return (
         <>
-            <motion.header
-                initial={{ y: -80, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            <header
+                ref={headerRef}
                 className={clsx(
-                    "fixed top-0 inset-x-0 z-50 transition-all duration-500",
+                    "fixed top-0 inset-x-0 z-50 transition-colors duration-500",
                     isScrolled
                         ? "bg-[var(--color-bg-card)]/80 backdrop-blur-xl border-b border-[var(--color-border)] shadow-sm"
                         : "bg-transparent"
@@ -60,7 +144,6 @@ export default function Navbar() {
             >
                 <nav className="mx-auto max-w-7xl px-6 lg:px-8">
                     <div className="flex h-16 lg:h-20 items-center justify-between">
-
                         {/* Logo */}
                         <Link
                             href="/"
@@ -68,7 +151,6 @@ export default function Navbar() {
                             style={{ fontFamily: "var(--font-display)" }}
                         >
                             Portfolio
-                            {/* ← REPLACE with your name/brand */}
                         </Link>
 
                         {/* Desktop nav */}
@@ -76,13 +158,24 @@ export default function Navbar() {
                             className="hidden lg:flex items-center gap-1"
                             onMouseLeave={() => setHoveredHref(null)}
                         >
+                            {/* Create hidden storage for pill/dot when not active (e.g. 404 pages) */}
+                            <div className="hidden">
+                                <span ref={pillRef} className="absolute inset-0 rounded-full" style={{ zIndex: -1, backgroundColor: "transparent" }} />
+                                <span ref={dotRef} className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[var(--color-accent)]" />
+                            </div>
+
                             {navItems.map((item) => {
                                 const isActive = pathname === item.href;
                                 const isHovered = hoveredHref === item.href;
-                                const showPill = isActive || isHovered;
 
                                 return (
-                                    <li key={item.href} className="relative">
+                                    <li
+                                        key={item.href}
+                                        className="relative"
+                                    // Target container for appending the layout pill/dot
+                                    >
+                                        <div className="absolute inset-0" data-pill-container={item.href} style={{ pointerEvents: "none" }} />
+
                                         <Link
                                             href={item.href}
                                             onMouseEnter={() => setHoveredHref(item.href)}
@@ -95,33 +188,10 @@ export default function Navbar() {
                                                         : "text-[var(--color-text-secondary)]"
                                             )}
                                         >
-                                            {showPill && (
-                                                <motion.span
-                                                    layoutId={pillId}
-                                                    className={clsx(
-                                                        "absolute inset-0 rounded-full",
-                                                        isActive
-                                                            ? "bg-[var(--color-accent)]/8"
-                                                            : "bg-[var(--color-bg-tertiary)]"
-                                                    )}
-                                                    transition={{
-                                                        type: "spring",
-                                                        stiffness: 380,
-                                                        damping: 34,
-                                                    }}
-                                                    style={{ zIndex: -1 }}
-                                                />
-                                            )}
                                             {item.label}
                                         </Link>
 
-                                        {isActive && (
-                                            <motion.span
-                                                layoutId="active-dot"
-                                                className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[var(--color-accent)]"
-                                                transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                                            />
-                                        )}
+                                        <div className="absolute inset-0" data-dot-container={item.href} style={{ pointerEvents: "none" }} />
                                     </li>
                                 );
                             })}
@@ -133,72 +203,38 @@ export default function Navbar() {
                             className="relative z-50 lg:hidden p-2 rounded-lg text-[var(--color-text-primary)] hover:bg-[var(--color-bg-tertiary)] transition-colors"
                             aria-label="Toggle menu"
                         >
-                            <AnimatePresence mode="wait" initial={false}>
-                                {mobileOpen ? (
-                                    <motion.div
-                                        key="x"
-                                        initial={{ rotate: -90, opacity: 0 }}
-                                        animate={{ rotate: 0, opacity: 1 }}
-                                        exit={{ rotate: 90, opacity: 0 }}
-                                        transition={{ duration: 0.18 }}
-                                    >
-                                        <X size={22} />
-                                    </motion.div>
-                                ) : (
-                                    <motion.div
-                                        key="menu"
-                                        initial={{ rotate: 90, opacity: 0 }}
-                                        animate={{ rotate: 0, opacity: 1 }}
-                                        exit={{ rotate: -90, opacity: 0 }}
-                                        transition={{ duration: 0.18 }}
-                                    >
-                                        <Menu size={22} />
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
+                            {mobileOpen ? <X size={22} /> : <Menu size={22} />}
                         </button>
                     </div>
                 </nav>
-            </motion.header>
+            </header>
 
             {/* Mobile menu overlay */}
-            <AnimatePresence>
-                {mobileOpen && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.22 }}
-                        className="fixed inset-0 z-40 bg-[var(--color-bg-card)]/96 backdrop-blur-xl lg:hidden"
-                    >
-                        <nav className="flex flex-col items-center justify-center h-full gap-3">
-                            {navItems.map((item, i) => (
-                                <motion.div
-                                    key={item.href}
-                                    initial={{ opacity: 0, y: 14 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: 14 }}
-                                    transition={{ delay: i * 0.04, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                                >
-                                    <Link
-                                        href={item.href}
-                                        onClick={() => setMobileOpen(false)}
-                                        className={clsx(
-                                            "block text-2xl font-semibold py-2 px-6 rounded-2xl transition-colors",
-                                            pathname === item.href
-                                                ? "gradient-text"
-                                                : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
-                                        )}
-                                        style={{ fontFamily: "var(--font-display)" }}
-                                    >
-                                        {item.label}
-                                    </Link>
-                                </motion.div>
-                            ))}
-                        </nav>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            <div
+                ref={mobileOverlayRef}
+                className="fixed inset-0 z-40 bg-[var(--color-bg-card)]/96 backdrop-blur-xl lg:hidden"
+                style={{ opacity: 0, visibility: "hidden" }}
+            >
+                <nav className="flex flex-col items-center justify-center h-full gap-3">
+                    {navItems.map((item) => (
+                        <div key={item.href}>
+                            <Link
+                                href={item.href}
+                                onClick={() => setMobileOpen(false)}
+                                className={clsx(
+                                    "block text-2xl font-semibold py-2 px-6 rounded-2xl transition-colors",
+                                    pathname === item.href
+                                        ? "gradient-text"
+                                        : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
+                                )}
+                                style={{ fontFamily: "var(--font-display)" }}
+                            >
+                                {item.label}
+                            </Link>
+                        </div>
+                    ))}
+                </nav>
+            </div>
         </>
     );
 }

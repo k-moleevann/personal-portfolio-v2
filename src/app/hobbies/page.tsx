@@ -4,7 +4,6 @@ import { useState } from "react";
 import PageTransition from "@/components/PageTransition";
 import SectionReveal from "@/components/SectionReveal";
 import { photos, videos } from "@/data/hobbies";
-import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { Camera, Film, Play, X } from "lucide-react";
 import clsx from "clsx";
@@ -31,9 +30,7 @@ export default function HobbiesPage() {
                             Hobbies
                         </h1>
                         <p className="mt-4 text-lg text-[var(--color-text-secondary)] max-w-2xl">
-                            {/* ← REPLACE intro */}
-                            When I&apos;m not coding, I express creativity through photography and
-                            filmmaking.
+                            When I&apos;m not coding, I express creativity through photography and filmmaking.
                         </p>
                     </SectionReveal>
                 </div>
@@ -59,26 +56,15 @@ export default function HobbiesPage() {
                         </div>
                     </SectionReveal>
 
-                    <AnimatePresence mode="wait">
+                    <div className="mt-8 transition-all duration-300">
                         {activeTab === "photography" ? (
-                            <motion.div
-                                key="photography"
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -20 }}
-                                transition={{ duration: 0.3 }}
-                            >
+                            <div key="photography" className="animate-fade-in">
                                 {/* Photo Gallery Grid */}
                                 <div className="columns-2 md:columns-3 gap-4 space-y-4">
-                                    {photos.map((photo, i) => (
-                                        <motion.div
+                                    {photos.map((photo) => (
+                                        <div
                                             key={photo.id}
-                                            initial={{ opacity: 0, y: 20 }}
-                                            whileInView={{ opacity: 1, y: 0 }}
-                                            viewport={{ once: true }}
-                                            transition={{ delay: i * 0.05, duration: 0.4 }}
-                                            whileHover={{ scale: 1.02 }}
-                                            className="break-inside-avoid cursor-pointer group relative overflow-hidden rounded-xl"
+                                            className="break-inside-avoid cursor-pointer group relative overflow-hidden rounded-xl transition-transform duration-300 hover:scale-[1.02]"
                                             onClick={() => setLightboxImage(photo.src)}
                                         >
                                             <div className="relative aspect-[4/3] bg-[var(--color-bg-tertiary)]">
@@ -100,26 +86,17 @@ export default function HobbiesPage() {
                                                     {photo.category}
                                                 </div>
                                             )}
-                                        </motion.div>
+                                        </div>
                                     ))}
                                 </div>
-                            </motion.div>
+                            </div>
                         ) : (
-                            <motion.div
-                                key="filming"
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -20 }}
-                                transition={{ duration: 0.3 }}
-                            >
+                            <div key="filming" className="animate-fade-in">
                                 {/* Video Cards */}
                                 <div className="grid sm:grid-cols-2 gap-6">
                                     {videos.map((video, i) => (
                                         <SectionReveal key={video.id} delay={i * 0.1}>
-                                            <motion.div
-                                                whileHover={{ y: -4 }}
-                                                className="group glass-card overflow-hidden hover:border-[var(--color-border-hover)] transition-all duration-500"
-                                            >
+                                            <div className="group glass-card overflow-hidden hover:border-[var(--color-border-hover)] hover:-translate-y-1 transition-all duration-500">
                                                 {/* Poster with play overlay */}
                                                 <div className="relative aspect-video bg-[var(--color-bg-tertiary)]">
                                                     <Image
@@ -130,16 +107,13 @@ export default function HobbiesPage() {
                                                         sizes="(max-width: 768px) 100vw, 50vw"
                                                     />
                                                     <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-colors duration-300">
-                                                        <motion.div
-                                                            whileHover={{ scale: 1.15 }}
-                                                            className="w-14 h-14 rounded-full bg-[var(--color-accent)]/90 backdrop-blur-sm flex items-center justify-center shadow-lg shadow-[var(--color-accent-glow)]"
-                                                        >
+                                                        <div className="w-14 h-14 rounded-full bg-[var(--color-accent)]/90 backdrop-blur-sm flex items-center justify-center shadow-lg shadow-[var(--color-accent-glow)] transition-transform duration-300 group-hover:scale-110">
                                                             <Play
                                                                 size={22}
                                                                 className="text-white ml-1"
                                                                 fill="white"
                                                             />
-                                                        </motion.div>
+                                                        </div>
                                                     </div>
                                                 </div>
 
@@ -167,52 +141,42 @@ export default function HobbiesPage() {
                                                         </div>
                                                     )}
                                                 </div>
-                                            </motion.div>
+                                            </div>
                                         </SectionReveal>
                                     ))}
                                 </div>
-                            </motion.div>
+                            </div>
                         )}
-                    </AnimatePresence>
+                    </div>
                 </div>
             </section>
 
             {/* Lightbox */}
-            <AnimatePresence>
-                {lightboxImage && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-xl flex items-center justify-center p-6"
+            {lightboxImage && (
+                <div
+                    className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-xl flex items-center justify-center p-6"
+                    onClick={() => setLightboxImage(null)}
+                >
+                    <button
+                        className="absolute top-6 right-6 p-2 text-white/70 hover:text-white transition-colors"
                         onClick={() => setLightboxImage(null)}
                     >
-                        <motion.button
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="absolute top-6 right-6 p-2 text-white/70 hover:text-white transition-colors"
-                            onClick={() => setLightboxImage(null)}
-                        >
-                            <X size={28} />
-                        </motion.button>
-                        <motion.div
-                            initial={{ scale: 0.8, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.8, opacity: 0 }}
-                            className="relative max-w-4xl max-h-[80vh] w-full aspect-[4/3]"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <Image
-                                src={lightboxImage}
-                                alt="Full view"
-                                fill
-                                className="object-contain"
-                                sizes="100vw"
-                            />
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                        <X size={28} />
+                    </button>
+                    <div
+                        className="relative max-w-4xl max-h-[80vh] w-full aspect-[4/3]"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <Image
+                            src={lightboxImage}
+                            alt="Full view"
+                            fill
+                            className="object-contain"
+                            sizes="100vw"
+                        />
+                    </div>
+                </div>
+            )}
         </PageTransition>
     );
 }
@@ -230,12 +194,10 @@ function TabButton({
     label: string;
 }) {
     return (
-        <motion.button
+        <button
             onClick={onClick}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
             className={clsx(
-                "flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold transition-all duration-300",
+                "flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold transition-all duration-300 hover:scale-[1.03] active:scale-[0.97]",
                 active
                     ? "bg-[var(--color-accent)] text-white shadow-lg shadow-[var(--color-accent-glow)]"
                     : "bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)]"
@@ -243,6 +205,6 @@ function TabButton({
         >
             {icon}
             {label}
-        </motion.button>
+        </button>
     );
 }
