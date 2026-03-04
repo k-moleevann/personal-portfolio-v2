@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Sparkles, ChevronRight } from "lucide-react";
 import SectionReveal, { RevealItem } from "@/components/SectionReveal";
 import ProjectCard from "@/components/ProjectCard";
@@ -10,15 +11,6 @@ import HeroInteractive from "@/components/HeroInteractive";
 import { projects } from "@/data/projects";
 import { experiences } from "@/data/experience";
 import PageTransition from "@/components/PageTransition";
-
-/* ── Storytelling lines — REPLACE with your own copy ── */
-const storyBeats = [
-  "I design like a storyteller.",
-  "I build interfaces that feel alive.",
-  "I obsess over motion and detail.",
-  "I ship clean, scalable code.",
-  "And I keep learning in public.",
-];
 
 export default function HomePage() {
   return (
@@ -158,28 +150,98 @@ function HeroSection() {
   );
 }
 
+/* ── Storytelling content ── */
+const storySections = [
+  {
+    title: "The Foundation",
+    heading: "From IT Infrastructure to Code.",
+    description:
+      "My journey started deep in the stack. Understanding systems, networks, and servers gave me an engineer's mindset: everything is connected, and performance is non-negotiable.",
+    image: "/images/story-1.png",
+  },
+  {
+    title: "The Interface",
+    heading: "Building the front end.",
+    description:
+      "I shifted my focus to where humans meet machines. I learned to translate complex logic into intuitive, accessible user interfaces using modern web technologies like React and Next.js.",
+    image: "/images/story-2.png",
+  },
+  {
+    title: "The Experience",
+    heading: "Obsessed with motion.",
+    description:
+      "Static pages aren't enough. I believe in interfaces that feel alive. Through deep dives into Framer Motion, CSS animations, and canvas, I bring a premium, tactile feel to the web.",
+    image: "/images/story-3.png",
+  },
+  {
+    title: "The Future",
+    heading: "Driven toward AI.",
+    description:
+      "Now, I'm bridging the gap between creative development and artificial intelligence. I'm building interfaces that don't just respond, but anticipate and adapt.",
+    image: "/images/story-4.png",
+  },
+];
+
 /* ──────────────────────────────────────────── */
 /* B) STORYTELLING                              */
 /* ──────────────────────────────────────────── */
 function StorytellingSection() {
   return (
-    <section className="py-32 lg:py-48 bg-[var(--color-bg-primary)]">
-      <div className="mx-auto max-w-5xl px-6 lg:px-8 space-y-24 lg:space-y-40">
-        {storyBeats.map((line, i) => (
-          <SectionReveal key={i} delay={0.08}>
-            <h2
-              className={
-                "text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight leading-tight " +
-                (i % 2 === 0
-                  ? "gradient-text"
-                  : "text-[var(--color-text-primary)]")
-              }
-              style={{ fontFamily: "var(--font-display)" }}
+    <section className="py-24 lg:py-40 bg-[var(--color-bg-primary)] overflow-hidden">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8 space-y-32 lg:space-y-48">
+        {storySections.map((section, i) => {
+          const isEven = i % 2 === 0;
+
+          return (
+            <div
+              key={i}
+              className={`flex flex-col gap-12 lg:gap-24 items-center ${isEven ? "lg:flex-row" : "lg:flex-row-reverse"
+                }`}
             >
-              {line}
-            </h2>
-          </SectionReveal>
-        ))}
+              {/* Image side */}
+              <div className="w-full lg:w-1/2">
+                <SectionReveal
+                  direction={isEven ? "left" : "right"}
+                  delay={0.1}
+                >
+                  <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden glass-card group">
+                    <Image
+                      src={section.image}
+                      alt={section.heading}
+                      fill
+                      className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-tr from-[var(--color-bg-primary)]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  </div>
+                </SectionReveal>
+              </div>
+
+              {/* Text side */}
+              <div className="w-full lg:w-1/2">
+                <SectionReveal
+                  direction={isEven ? "right" : "left"}
+                  delay={0.2}
+                >
+                  <div className={isEven ? "lg:pr-12" : "lg:pl-12"}>
+                    <p className="text-sm font-bold uppercase tracking-widest text-[var(--color-accent)] mb-4">
+                      {section.title}
+                    </p>
+                    <h2
+                      className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[var(--color-text-primary)] leading-[1.1] mb-6"
+                      style={{ fontFamily: "var(--font-display)" }}
+                    >
+                      {section.heading}
+                    </h2>
+                    <p className="text-lg text-[var(--color-text-secondary)] leading-relaxed">
+                      {section.description}
+                    </p>
+                  </div>
+                </SectionReveal>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </section>
   );
