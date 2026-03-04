@@ -82,6 +82,14 @@ body {
   background-clip: text;
 }
 
+/* ── Typography Utilities ── */
+.text-massive-header {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
 /* ── Card ── */
 .glass-card {
   background: var(--color-bg-glass);

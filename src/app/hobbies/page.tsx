@@ -5,7 +5,9 @@ import PageTransition from "@/components/PageTransition";
 import SectionReveal from "@/components/SectionReveal";
 import { photos, videos } from "@/data/hobbies";
 import Image from "next/image";
-import { Camera, Film, Play, X } from "lucide-react";
+import { Camera, Film, X } from "lucide-react";
+import Card from "@/components/Card";
+import Button from "@/components/Button";
 import clsx from "clsx";
 
 type Tab = "photography" | "filming";
@@ -23,13 +25,10 @@ export default function HobbiesPage() {
                         <p className="text-sm font-medium uppercase tracking-widest text-[var(--color-accent)] mb-4">
                             Beyond Code
                         </p>
-                        <h1
-                            className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight"
-                            style={{ fontFamily: "var(--font-display)" }}
-                        >
+                        <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-massive-header text-[var(--color-text-primary)]">
                             Hobbies
                         </h1>
-                        <p className="mt-4 text-lg text-[var(--color-text-secondary)] max-w-2xl">
+                        <p className="mt-6 text-lg sm:text-xl text-[var(--color-text-secondary)] max-w-2xl leading-relaxed">
                             When I&apos;m not coding, I express creativity through photography and filmmaking.
                         </p>
                     </SectionReveal>
@@ -40,100 +39,99 @@ export default function HobbiesPage() {
             <section className="pb-24 lg:pb-32">
                 <div className="mx-auto max-w-6xl px-6 lg:px-8">
                     <SectionReveal>
-                        <div className="flex gap-2 mb-12">
-                            <TabButton
-                                active={activeTab === "photography"}
+                        <div className="flex gap-4 mb-16">
+                            <Button
+                                variant={activeTab === "photography" ? "solid" : "outline"}
                                 onClick={() => setActiveTab("photography")}
-                                icon={<Camera size={18} />}
-                                label="Photography"
-                            />
-                            <TabButton
-                                active={activeTab === "filming"}
+                                className="!px-6 !py-2.5 !text-sm gap-2"
+                            >
+                                <Camera size={16} />
+                                Photography
+                            </Button>
+                            <Button
+                                variant={activeTab === "filming" ? "solid" : "outline"}
                                 onClick={() => setActiveTab("filming")}
-                                icon={<Film size={18} />}
-                                label="Filming"
-                            />
+                                className="!px-6 !py-2.5 !text-sm gap-2"
+                            >
+                                <Film size={16} />
+                                Filming
+                            </Button>
                         </div>
                     </SectionReveal>
 
-                    <div className="mt-8 transition-all duration-300">
+                    <div className="transition-all duration-300">
                         {activeTab === "photography" ? (
                             <div key="photography" className="animate-fade-in">
-                                {/* Photo Gallery Grid */}
-                                <div className="columns-2 md:columns-3 gap-4 space-y-4">
+                                {/* Masonry Layout for Photography (Using CSS Columns for simple masonry) */}
+                                <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
                                     {photos.map((photo) => (
-                                        <div
-                                            key={photo.id}
-                                            className="break-inside-avoid cursor-pointer group relative overflow-hidden rounded-xl transition-transform duration-300 hover:scale-[1.02]"
-                                            onClick={() => setLightboxImage(photo.src)}
-                                        >
-                                            <div className="relative aspect-[4/3] bg-[var(--color-bg-tertiary)]">
-                                                <Image
-                                                    src={photo.src}
-                                                    alt={photo.alt}
-                                                    fill
-                                                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                                                    sizes="(max-width: 768px) 50vw, 33vw"
-                                                />
-                                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
-                                                    <span className="text-white text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        <div key={photo.id} className="break-inside-avoid">
+                                            <Card variant="gray" className="!p-3 sm:!p-4 !rounded-[2rem] hover:-translate-y-1 group">
+                                                <div
+                                                    className="relative bg-white rounded-3xl overflow-hidden cursor-pointer"
+                                                    onClick={() => setLightboxImage(photo.src)}
+                                                >
+                                                    <Image
+                                                        src={photo.src}
+                                                        alt={photo.alt}
+                                                        width={600}
+                                                        height={800} // Using a generic height to allow next/image to naturally scale in layout="responsive" although we use auto/object-cover below. 
+                                                        className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
+                                                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                                    />
+                                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center pointer-events-none">
+                                                        <span className="text-white text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0">
+                                                            View Full
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div className="px-3 pt-4 pb-1">
+                                                    <p className="text-sm font-semibold text-[var(--color-text-primary)] leading-tight mb-1">
                                                         {photo.alt}
-                                                    </span>
+                                                    </p>
+                                                    {photo.category && (
+                                                        <p className="text-xs text-[var(--color-accent)] font-medium uppercase tracking-wider">
+                                                            {photo.category}
+                                                        </p>
+                                                    )}
                                                 </div>
-                                            </div>
-                                            {photo.category && (
-                                                <div className="absolute top-3 left-3 px-2 py-0.5 text-[10px] font-medium rounded-full bg-black/50 text-white/80 backdrop-blur-sm">
-                                                    {photo.category}
-                                                </div>
-                                            )}
+                                            </Card>
                                         </div>
                                     ))}
                                 </div>
                             </div>
                         ) : (
                             <div key="filming" className="animate-fade-in">
-                                {/* Video Cards */}
-                                <div className="grid sm:grid-cols-2 gap-6">
+                                {/* Grid Layout for Videos */}
+                                <div className="grid sm:grid-cols-2 gap-8">
                                     {videos.map((video, i) => (
                                         <SectionReveal key={video.id} delay={i * 0.1}>
-                                            <div className="group glass-card overflow-hidden hover:border-[var(--color-border-hover)] hover:-translate-y-1 transition-all duration-500">
-                                                {/* Poster with play overlay */}
-                                                <div className="relative aspect-video bg-[var(--color-bg-tertiary)]">
-                                                    <Image
-                                                        src={video.poster}
-                                                        alt={video.title}
-                                                        fill
-                                                        className="object-cover"
-                                                        sizes="(max-width: 768px) 100vw, 50vw"
+                                            <Card variant="white" className="h-full flex flex-col !p-4 !rounded-[2.5rem] group hover:-translate-y-1 hover:shadow-xl hover:shadow-[var(--color-border-hover)]">
+                                                <div className="relative aspect-video w-full rounded-3xl overflow-hidden mb-5 bg-[var(--color-bg-secondary)]">
+                                                    {/* Using a placeholder <video> tag as requested. It's set to muted/loop/playsInline to run quietly. */}
+                                                    <video
+                                                        src="https://www.w3schools.com/html/mov_bbb.mp4"
+                                                        poster={video.poster}
+                                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                                        muted
+                                                        loop
+                                                        playsInline
+                                                        controls
                                                     />
-                                                    <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-colors duration-300">
-                                                        <div className="w-14 h-14 rounded-full bg-[var(--color-accent)]/90 backdrop-blur-sm flex items-center justify-center shadow-lg shadow-[var(--color-accent-glow)] transition-transform duration-300 group-hover:scale-110">
-                                                            <Play
-                                                                size={22}
-                                                                className="text-white ml-1"
-                                                                fill="white"
-                                                            />
-                                                        </div>
-                                                    </div>
                                                 </div>
-
-                                                {/* Info */}
-                                                <div className="p-5">
-                                                    <h3
-                                                        className="text-lg font-bold text-[var(--color-text-primary)]"
-                                                        style={{ fontFamily: "var(--font-display)" }}
-                                                    >
+                                                <div className="px-3 pb-3 flex-1 flex flex-col">
+                                                    <h3 className="text-xl font-bold font-display text-[var(--color-text-primary)] mb-2">
                                                         {video.title}
                                                     </h3>
-                                                    <p className="text-sm text-[var(--color-text-secondary)] mt-1">
+                                                    <p className="text-sm text-[var(--color-text-secondary)] mb-4 flex-1">
                                                         {video.description}
                                                     </p>
                                                     {video.tags && (
-                                                        <div className="mt-3 flex flex-wrap gap-2">
+                                                        <div className="flex flex-wrap gap-2">
                                                             {video.tags.map((tag) => (
                                                                 <span
                                                                     key={tag}
-                                                                    className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-[var(--color-bg-tertiary)] text-[var(--color-text-muted)] border border-[var(--color-border)]"
+                                                                    className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)]"
                                                                 >
                                                                     {tag}
                                                                 </span>
@@ -141,7 +139,7 @@ export default function HobbiesPage() {
                                                         </div>
                                                     )}
                                                 </div>
-                                            </div>
+                                            </Card>
                                         </SectionReveal>
                                     ))}
                                 </div>
@@ -164,7 +162,7 @@ export default function HobbiesPage() {
                         <X size={28} />
                     </button>
                     <div
-                        className="relative max-w-4xl max-h-[80vh] w-full aspect-[4/3]"
+                        className="relative max-w-5xl max-h-[90vh] w-full aspect-[4/3]"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <Image
@@ -178,33 +176,5 @@ export default function HobbiesPage() {
                 </div>
             )}
         </PageTransition>
-    );
-}
-
-/* Tab Button subcomponent */
-function TabButton({
-    active,
-    onClick,
-    icon,
-    label,
-}: {
-    active: boolean;
-    onClick: () => void;
-    icon: React.ReactNode;
-    label: string;
-}) {
-    return (
-        <button
-            onClick={onClick}
-            className={clsx(
-                "flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold transition-all duration-300 hover:scale-[1.03] active:scale-[0.97]",
-                active
-                    ? "bg-[var(--color-accent)] text-white shadow-lg shadow-[var(--color-accent-glow)]"
-                    : "bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)]"
-            )}
-        >
-            {icon}
-            {label}
-        </button>
     );
 }
